@@ -25,8 +25,8 @@ import pedroPathing.constants.LConstants;
  * @version 2.0, 11/28/2024
  */
 
-@Autonomous(name = "Example Auto Blue", group = "Examples")
-public class ExampleBucketAuto extends OpMode {
+@Autonomous(name = "reference", group = "Examples")
+public class refer extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -45,10 +45,10 @@ public class ExampleBucketAuto extends OpMode {
      * Lets assume the Robot is facing the human player and we want to score in the bucket */
 
     /** Start Pose of our robot */
-    private final Pose startPose = new Pose(9, 111, Math.toRadians(270));
+    private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
-    private final Pose scorePose = new Pose(14, 129, Math.toRadians(315));
+    private final Pose scorePreloadPose = new Pose(30.3, 3.6, Math.toRadians(0));
 
     /** Lowest (First) Sample from the Spike Mark */
     private final Pose pickup1Pose = new Pose(37, 121, Math.toRadians(0));
@@ -68,7 +68,12 @@ public class ExampleBucketAuto extends OpMode {
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
     private Path scorePreload, park;
-    private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3;
+    private Path grabPickup1;
+    private PathChain grabPickup2;
+    private PathChain grabPickup3;
+    private PathChain scorePickup1;
+    private PathChain scorePickup2;
+    private PathChain scorePickup3;
 
     /** Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
      * It is necessary to do this so that all the paths are built before the auto starts. **/
@@ -90,51 +95,55 @@ public class ExampleBucketAuto extends OpMode {
          * Here is a explanation of the difference between Paths and PathChains <https://pedropathing.com/commonissues/pathtopathchain.html> */
 
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
-        scorePreload = new Path(new BezierLine(new Point(startPose), new Point(scorePose)));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
+        scorePreload = new Path(new BezierLine(new Point(startPose), new Point(scorePreloadPose)));
+        scorePreload.setConstantHeadingInterpolation(Math.toRadians(0));
 
         /* Here is an example for Constant Interpolation
         scorePreload.setConstantInterpolation(startPose.getHeading()); */
 
         /* This is our grabPickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        grabPickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose), new Point(pickup1Pose)))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading())
-                .build();
+        grabPickup1 = new Path(new BezierCurve(new Point(scorePreloadPose),
+                new Point(19.5, 5.3, Point.CARTESIAN),
+                new Point(19.5, -25, Point.CARTESIAN),
+                new Point(19.5, -25, Point.CARTESIAN),
+                new Point(19.5, -25, Point.CARTESIAN),
+                new Point(46,-25, Point.CARTESIAN),
+                new Point(46, -27, Point.CARTESIAN),
+                new Point(46, -41, Point.CARTESIAN)));
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup1Pose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
-                .build();
-
-        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        grabPickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose), new Point(pickup2Pose)))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
-                .build();
-
-        /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup2Pose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading())
-                .build();
-
-        /* This is our grabPickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        grabPickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose), new Point(pickup3Pose)))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
-                .build();
-
-        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup3Pose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
-                .build();
-
-        /* This is our park path. We are using a BezierCurve with 3 points, which is a curved line that is curved based off of the control point */
-        park = new Path(new BezierCurve(new Point(scorePose), /* Control Point */ new Point(parkControlPose), new Point(parkPose)));
-        park.setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading());
+//        scorePickup1 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(pickup1Pose), new Point(scorePose)))
+//                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
+//                .build();
+//
+//        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+//        grabPickup2 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(scorePose), new Point(pickup2Pose)))
+//                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+//                .build();
+//
+//        /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+//        scorePickup2 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(pickup2Pose), new Point(scorePose)))
+//                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading())
+//                .build();
+//
+//        /* This is our grabPickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+//        grabPickup3 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(scorePose), new Point(pickup3Pose)))
+//                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
+//                .build();
+//
+//        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+//        scorePickup3 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(pickup3Pose), new Point(scorePose)))
+//                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
+//                .build();
+//
+//        /* This is our park path. We are using a BezierCurve with 3 points, which is a curved line that is curved based off of the control point */
+//        park = new Path(new BezierCurve(new Point(scorePose), /* Control Point */ new Point(parkControlPose), new Point(parkPose)));
+//        park.setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading());
     }
 
     /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
@@ -159,71 +168,71 @@ public class ExampleBucketAuto extends OpMode {
                     /* Score Preload */
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(grabPickup1,true);
+                    follower.followPath(grabPickup1);
                     setPathState(2);
                 }
                 break;
+//            case 2:
+//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
+//                if(!follower.isBusy()) {
+//                    /* Grab Sample */
+//
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+//                    follower.followPath(scorePickup1,true);
+//                    setPathState(3);
+//                }
+//                break;
+//            case 3:
+//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+//                if(!follower.isBusy()) {
+//                    /* Score Sample */
+//
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+//                    follower.followPath(grabPickup2,true);
+//                    setPathState(4);
+//                }
+//                break;
+//            case 4:
+//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup2Pose's position */
+//                if(!follower.isBusy()) {
+//                    /* Grab Sample */
+//
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+//                    follower.followPath(scorePickup2,true);
+//                    setPathState(5);
+//                }
+//                break;
+//            case 5:
+//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+//                if(!follower.isBusy()) {
+//                    /* Score Sample */
+//
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+//                    follower.followPath(grabPickup3,true);
+//                    setPathState(6);
+//                }
+//                break;
+//            case 6:
+//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
+//                if(!follower.isBusy()) {
+//                    /* Grab Sample */
+//
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+//                    follower.followPath(scorePickup3, true);
+//                    setPathState(7);
+//                }
+//                break;
+//            case 7:
+//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+//                if(!follower.isBusy()) {
+//                    /* Score Sample */
+//
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
+//                    follower.followPath(park,true);
+//                    setPathState(8);
+//                }
+//                break;
             case 2:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(!follower.isBusy()) {
-                    /* Grab Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(scorePickup1,true);
-                    setPathState(3);
-                }
-                break;
-            case 3:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
-                    /* Score Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(grabPickup2,true);
-                    setPathState(4);
-                }
-                break;
-            case 4:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup2Pose's position */
-                if(!follower.isBusy()) {
-                    /* Grab Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(scorePickup2,true);
-                    setPathState(5);
-                }
-                break;
-            case 5:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
-                    /* Score Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(grabPickup3,true);
-                    setPathState(6);
-                }
-                break;
-            case 6:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if(!follower.isBusy()) {
-                    /* Grab Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(scorePickup3, true);
-                    setPathState(7);
-                }
-                break;
-            case 7:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
-                    /* Score Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-                    follower.followPath(park,true);
-                    setPathState(8);
-                }
-                break;
-            case 8:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
                     /* Level 1 Ascent */
@@ -255,6 +264,7 @@ public class ExampleBucketAuto extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("path", follower.getCurrentPath());
         telemetry.update();
     }
 
@@ -267,7 +277,7 @@ public class ExampleBucketAuto extends OpMode {
 
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(startPose);
-        buildPaths();
+//        buildPaths();
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -287,3 +297,4 @@ public class ExampleBucketAuto extends OpMode {
     public void stop() {
     }
 }
+

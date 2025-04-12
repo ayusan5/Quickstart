@@ -1,0 +1,12 @@
+package common.commands.arm.armPitchCommands;
+
+import com.arcrobotics.ftclib.command.InstantCommand;
+
+import common.robot.robotHardware;
+import common.subsystems.armSubsystem;
+
+public class armPitchSampleDepositPos extends InstantCommand {
+    public armPitchSampleDepositPos(){
+        super(() -> robotHardware.getInstance().armSub.updatePitchState((armSubsystem.armPitchState.armPitchSampleDepositPos)));
+    }
+}

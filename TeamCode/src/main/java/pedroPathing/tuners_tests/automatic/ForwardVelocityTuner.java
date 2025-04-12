@@ -48,7 +48,7 @@ import pedroPathing.constants.LConstants;
  */
 @Config
 @Autonomous(name = "Forward Velocity Tuner", group = "Automatic Tuners")
-public class ForwardVelocityTuner extends OpMode {
+public class    ForwardVelocityTuner extends OpMode {
     private ArrayList<Double> velocities = new ArrayList<>();
 
     private DcMotorEx leftFront;
